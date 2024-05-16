@@ -16,31 +16,23 @@ on:
 
 jobs:
   build_makefile:
-    name: Makefile (${{ matrix.cc }})
+    name: Makefile (${{ matrix.runs-on }}, ${{ matrix.cc }})
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - cc: gcc-13
+          - cc: gcc-10
             clang_major_version: null
             runs-on: ubuntu-22.04
-          - cc: clang-18
-            clang_major_version: 18
+          - cc: clang-13
+            clang_major_version: 13
             runs-on: ubuntu-22.04
     env:
       CC: ${{ matrix.cc }}
       CFLAGS: -std=gnu99 -Wall -Wextra -pedantic -g -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer
       LDFLAGS: -g -fsanitize=address,undefined
     steps:
-      - name: Add Clang/LLVM repositories
-        if: "${{ contains(matrix.cc, 'clang') }}"
-        run: |-
-          set -x
-          source /etc/os-release
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${{ matrix.clang_major_version }} main"
-
       - name: Install build dependencies
         run: |-
           sudo apt-get update
@@ -49,14 +41,6 @@ jobs:
             libfuse3-dev \
             pkg-config \
             python3-pytest
-
-      - name: Install build dependency Clang ${{ matrix.clang_major_version }}
-        if: "${{ contains(matrix.cc, 'clang') }}"
-        run: |-
-          sudo apt-get install --yes --no-install-recommends -V \
-              clang-${{ matrix.clang_major_version }} \
-              libclang-rt-${{ matrix.clang_major_version }}-dev \
-              llvm-${{ matrix.clang_major_version }}
 
       - name: Checkout Git branch
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b  # v4.1.4
