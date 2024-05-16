@@ -19,7 +19,7 @@ jobs:
     name: Makefile (${{ matrix.cc }})
     runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - cc: gcc-13

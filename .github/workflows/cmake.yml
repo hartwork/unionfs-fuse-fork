@@ -19,7 +19,7 @@ jobs:
     name: CMake (${{ matrix.runs-on }}, ${{ matrix.cc }})
     runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           # FUSE 3 on Linux
